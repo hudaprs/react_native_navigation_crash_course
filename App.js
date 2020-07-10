@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import Login from './src/screens/Login';
 import Register from './src/screens/Register';
@@ -9,11 +10,16 @@ import Home from './src/screens/Home';
 import Search from './src/screens/Search';
 import Search2 from './src/screens/Search2';
 import Details from './src/screens/Details';
+import Profile from './src/screens/Profile';
+import Loading from './src/screens/Loading';
 
 const AuthStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
 const HomeStack = createStackNavigator();
 const SearchStack = createStackNavigator();
+const ProfileStack = createStackNavigator();
 
 const HomeStackScreen = () => {
   return (
@@ -39,18 +45,67 @@ const SearchStackScreen = () => {
   );
 };
 
+const ProfileStackScreen = () => {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen name="Profile" component={Profile} />
+    </ProfileStack.Navigator>
+  );
+};
+
+const TabsScreen = () => {
+  return (
+    <Tabs.Navigator>
+      <Tabs.Screen name="Home" component={HomeStackScreen} />
+      <Tabs.Screen name="Search" component={SearchStackScreen} />
+    </Tabs.Navigator>
+  );
+};
+
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [userToken, setUserToken] = useState(null);
+
+  const authContext = useMemo(() => {
+    return {
+      login: () => {
+        setIsLoading(false);
+        setUserToken('asdsad');
+      },
+      register: () => {
+        setIsLoading(false);
+        setUserToken('asdsad');
+      },
+      logout: () => {
+        setIsLoading(false);
+        setUserToken(null);
+      },
+    };
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <NavigationContainer>
-      <Tabs.Navigator>
-        <Tabs.Screen name="Home" component={HomeStackScreen} />
-        <Tabs.Screen name="Search" component={SearchStackScreen} />
-      </Tabs.Navigator>
-
-      {/* <AuthStack.Navigator>
-        <AuthStack.Screen name="Login" component={Login} />
-        <AuthStack.Screen name="Register" component={Register} />
-      </AuthStack.Navigator> */}
+      {userToken ? (
+        <Drawer.Navigator>
+          <Drawer.Screen name="Home" component={TabsScreen} />
+          <Drawer.Screen name="Profile" component={ProfileStackScreen} />
+        </Drawer.Navigator>
+      ) : (
+        <AuthStack.Navigator>
+          <AuthStack.Screen name="Login" component={Login} />
+          <AuthStack.Screen name="Register" component={Register} />
+        </AuthStack.Navigator>
+      )}
     </NavigationContainer>
   );
 };

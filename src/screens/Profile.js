@@ -1,15 +1,14 @@
 import React from 'react';
-import {Button} from 'react-native';
+import {Button, Text} from 'react-native';
 
 import ScreenContainer from './ScreenContainer';
 
 const Profile = ({navigation}) => {
   return (
     <ScreenContainer>
-      <Button
-        title="Go to home screen"
-        onPress={() => alert('Will go to home screen')}
-      />
+      <Text>Profile Screen</Text>
+      <Button title="Drawer" onPress={() => navigation.toggleDrawer()} />
+      <Button title="SignOut" onPress={() => alert('Sign out')} />
     </ScreenContainer>
   );
 };
