@@ -1,12 +1,18 @@
-import React from 'react';
-import {Button} from 'react-native';
+import React, {useContext} from 'react';
+import {Button, Text} from 'react-native';
 import ScreenContainer from './ScreenContainer';
 
+import {AuthContext} from '../context';
+
 const Register = ({navigation}) => {
+  const {register} = useContext(AuthContext);
+
   return (
     <ScreenContainer>
+      <Text>Register Screen</Text>
+      <Button title="Register" onPress={register} />
       <Button
-        title="Go to login screen"
+        title="Login Screen"
         onPress={() => navigation.navigate('Login')}
       />
     </ScreenContainer>

@@ -13,13 +13,16 @@ import Details from './src/screens/Details';
 import Profile from './src/screens/Profile';
 import Loading from './src/screens/Loading';
 
-const AuthStack = createStackNavigator();
+import {AuthContext} from './src/context';
+
 const Tabs = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
 const HomeStack = createStackNavigator();
 const SearchStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const RootStack = createStackNavigator();
 
 const HomeStackScreen = () => {
   return (
@@ -62,6 +65,44 @@ const TabsScreen = () => {
   );
 };
 
+const DrawerScreen = () => {
+  return (
+    <Drawer.Navigator initialRouteName="Profile">
+      <Drawer.Screen name="Home" component={TabsScreen} />
+      <Drawer.Screen name="Profile" component={ProfileStackScreen} />
+    </Drawer.Navigator>
+  );
+};
+
+const AuthStackScreen = () => {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen name="Login" component={Login} />
+      <AuthStack.Screen name="Register" component={Register} />
+    </AuthStack.Navigator>
+  );
+};
+
+const RootStackScreen = ({userToken}) => {
+  return (
+    <RootStack.Navigator headerMode="none">
+      {userToken ? (
+        <RootStack.Screen
+          name="Home"
+          component={DrawerScreen}
+          options={{animationEnabled: false}}
+        />
+      ) : (
+        <RootStack.Screen
+          name="Auth"
+          component={AuthStackScreen}
+          options={{animationEnabled: false}}
+        />
+      )}
+    </RootStack.Navigator>
+  );
+};
+
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
@@ -94,19 +135,11 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      {userToken ? (
-        <Drawer.Navigator>
-          <Drawer.Screen name="Home" component={TabsScreen} />
-          <Drawer.Screen name="Profile" component={ProfileStackScreen} />
-        </Drawer.Navigator>
-      ) : (
-        <AuthStack.Navigator>
-          <AuthStack.Screen name="Login" component={Login} />
-          <AuthStack.Screen name="Register" component={Register} />
-        </AuthStack.Navigator>
-      )}
-    </NavigationContainer>
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        <RootStackScreen userToken={userToken} />
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 };
 
